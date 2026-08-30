@@ -1,0 +1,2832 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Country Guesser</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #5ac8fa,
+            white
+        );
+
+    min-height: 100vh;
+
+    margin: 0;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* =========================
+   MAIN GAME
+========================= */
+
+.game-box {
+    width: min(1000px, 92vw);
+
+    min-height: 650px;
+
+    margin: 30px auto;
+
+    padding: clamp(25px, 4vw, 55px);
+
+    background: rgba(255,255,255,0.96);
+
+    border-radius: 30px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.25);
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+
+h1 {
+    font-size:
+        clamp(36px, 5vw, 64px);
+
+    margin-top: 0;
+
+    margin-bottom: 10px;
+}
+
+
+#difficultyDisplay {
+    font-size:
+        clamp(18px, 2vw, 24px);
+
+    color: #555;
+
+    margin-top: 0;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    background: #f1f5f9;
+
+    border-radius: 18px;
+
+    padding: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.stat {
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+    font-size:
+        clamp(15px, 1.5vw, 20px);
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.08);
+}
+
+
+/* =========================
+   XP
+========================= */
+
+.xp-box {
+    width: min(650px, 95%);
+
+    margin-bottom: 12px;
+
+    background: #f3f7fb;
+
+    border-radius: 16px;
+
+    padding: 14px 18px;
+}
+
+
+#levelText {
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+
+.xp-bar {
+    width: 100%;
+
+    height: 22px;
+
+    margin-top: 9px;
+
+    background: #d8dde3;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+
+#xpFill {
+    width: 0%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            to right,
+            #36c66f,
+            #ffd84d
+        );
+
+    border-radius: 20px;
+
+    transition: width 0.4s;
+}
+
+
+#xpText {
+    margin-top: 8px;
+
+    color: #555;
+}
+
+
+/* =========================
+   RANK
+========================= */
+
+.rank-box {
+    width: min(650px, 95%);
+
+    background: white;
+
+    padding: 12px;
+
+    border-radius: 15px;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.1);
+}
+
+
+#rankText {
+    font-size: 21px;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   PLAYTIME REWARDS
+========================= */
+
+.rewards-box {
+    width: min(700px, 95%);
+
+    background: #f5f8fc;
+
+    padding: 16px;
+
+    border-radius: 20px;
+
+    margin-bottom: 24px;
+}
+
+
+.rewards-title {
+    font-size: 22px;
+
+    font-weight: bold;
+
+    margin-bottom: 6px;
+}
+
+
+#playtime {
+    color: #555;
+
+    margin-bottom: 12px;
+}
+
+
+.reward-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 9px;
+}
+
+
+.reward {
+    background: #dde4eb;
+
+    color: #555;
+
+    padding: 12px 5px;
+
+    font-size: 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    cursor: default;
+}
+
+
+.reward span {
+    display: block;
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+
+.reward.ready {
+    background: #63df7c;
+
+    color: #123b1c;
+
+    cursor: pointer;
+
+    animation:
+        rewardGlow 1s
+        infinite alternate;
+}
+
+
+.reward.claimed {
+    background: #b8bec5;
+
+    color: white;
+
+    animation: none;
+}
+
+
+@keyframes rewardGlow {
+
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.04);
+    }
+
+}
+
+
+/* =========================
+   CLUES
+========================= */
+
+.clue {
+    width: 90%;
+
+    font-size:
+        clamp(18px, 2vw, 26px);
+
+    line-height: 1.5;
+
+    margin: 8px auto;
+
+    padding: 12px;
+
+    border-radius: 12px;
+}
+
+
+#clue1 {
+    background: #eef7ff;
+}
+
+
+#clue2 {
+    background: #fff7dc;
+}
+
+
+#clue3 {
+    background: #ffecec;
+}
+
+
+.clue:empty {
+    display: none;
+}
+
+
+/* =========================
+   INPUT
+========================= */
+
+#guess {
+    width: min(500px, 85%);
+
+    padding: 16px 18px;
+
+    font-size:
+        clamp(17px, 2vw, 22px);
+
+    border-radius: 14px;
+
+    border: 2px solid #aaa;
+
+    outline: none;
+
+    text-align: center;
+}
+
+
+#guess:focus {
+    border-color: #1687ff;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(22,135,255,0.15);
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+    padding: 14px 28px;
+
+    font-size:
+        clamp(16px, 1.8vw, 20px);
+
+    border: none;
+
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    transition: 0.15s;
+}
+
+
+button:hover {
+    transform: scale(1.05);
+}
+
+
+#check {
+    margin-top: 18px;
+
+    background: #1687ff;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   LEVEL SCREEN
+========================= */
+
+#levelScreen {
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #5ac8fa,
+            white
+        );
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 20;
+}
+
+
+.level-box {
+    background: white;
+
+    padding:
+        clamp(30px, 5vw, 60px);
+
+    border-radius: 30px;
+
+    width: min(600px, 85vw);
+
+    box-shadow:
+        0 20px 70px
+        rgba(0,0,0,0.3);
+}
+
+
+.level-button {
+    display: block;
+
+    width: 100%;
+
+    margin: 15px 0;
+
+    padding: 18px;
+
+    font-size: 21px;
+
+    font-weight: bold;
+}
+
+
+.easy {
+    background: #63df7c;
+}
+
+
+.medium {
+    background: #ffd34e;
+}
+
+
+.hard {
+    background: #ff6464;
+
+    color: white;
+}
+
+
+/* =========================
+   POPUP
+========================= */
+
+.popup {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,0.6);
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+}
+
+
+.popup.show {
+    display: flex;
+}
+
+
+.popup-box {
+    background: white;
+
+    width: min(450px, 85vw);
+
+    padding: 40px;
+
+    border-radius: 25px;
+
+    box-shadow:
+        0 20px 70px
+        rgba(0,0,0,0.4);
+
+    animation: popIn 0.25s;
+}
+
+
+.popup-box h2 {
+    font-size:
+        clamp(26px, 4vw, 38px);
+
+    margin-top: 0;
+}
+
+
+.popup-box p {
+    font-size: 19px;
+
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+#popupButton {
+    background: #1687ff;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+@keyframes popIn {
+
+    from {
+        transform: scale(0.7);
+
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+
+        opacity: 1;
+    }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    body {
+        align-items: flex-start;
+    }
+
+
+    .game-box {
+        width: 94vw;
+
+        min-height: auto;
+
+        margin: 20px auto;
+
+        padding: 25px 15px;
+    }
+
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+
+    .reward-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .clue {
+        width: 100%;
+    }
+
+
+    #guess {
+        width: 95%;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- LEVEL SELECT -->
+
+<div id="levelScreen">
+
+    <div class="level-box">
+
+        <h1>
+            🌎 Country Guesser
+        </h1>
+
+        <h2>
+            Choose Your Level
+        </h2>
+
+        <button
+            class="level-button easy"
+            id="easyButton"
+        >
+            🟢 Easy
+        </button>
+
+        <button
+            class="level-button medium"
+            id="mediumButton"
+        >
+            🟡 Medium
+        </button>
+
+        <button
+            class="level-button hard"
+            id="hardButton"
+        >
+            🔴 Hard
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- GAME -->
+
+<div class="game-box">
+
+    <h1>
+        🌎 Country Guesser
+    </h1>
+
+    <h3 id="difficultyDisplay"></h3>
+
+
+    <div class="stats">
+
+        <div
+            class="stat"
+            id="score"
+        >
+            ⭐ Score: 0
+        </div>
+
+        <div
+            class="stat"
+            id="round"
+        >
+            🌎 Round: 1 / 10
+        </div>
+
+        <div
+            class="stat"
+            id="streak"
+        >
+            🔥 Streak: 0
+        </div>
+
+    </div>
+
+
+    <div class="xp-box">
+
+        <div id="levelText">
+            ⭐ Player Level 1
+        </div>
+
+        <div class="xp-bar">
+
+            <div id="xpFill"></div>
+
+        </div>
+
+        <div id="xpText">
+            0 / 500 XP
+        </div>
+
+    </div>
+
+
+    <div class="rank-box">
+
+        <div id="rankText">
+            🌱 Rookie
+        </div>
+
+    </div>
+
+
+    <div class="rewards-box">
+
+        <div class="rewards-title">
+            🎁 Playtime Rewards
+        </div>
+
+        <div id="playtime">
+            ⏱️ Playtime: 0:00
+        </div>
+
+
+        <div class="reward-grid">
+
+            <button
+                class="reward"
+                id="reward2"
+            >
+                🔒 2 MIN
+                <span>+100 XP</span>
+            </button>
+
+            <button
+                class="reward"
+                id="reward5"
+            >
+                🔒 5 MIN
+                <span>+200 XP</span>
+            </button>
+
+            <button
+                class="reward"
+                id="reward10"
+            >
+                🔒 10 MIN
+                <span>+350 XP</span>
+            </button>
+
+            <button
+                class="reward"
+                id="reward20"
+            >
+                🔒 20 MIN
+                <span>+600 XP</span>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <p
+        id="clue1"
+        class="clue"
+    ></p>
+
+    <p
+        id="clue2"
+        class="clue"
+    ></p>
+
+    <p
+        id="clue3"
+        class="clue"
+    ></p>
+
+
+    <br>
+
+
+    <input
+        id="guess"
+        placeholder="Type a country..."
+        autocomplete="off"
+    >
+
+
+    <button id="check">
+        Check Answer 🌍
+    </button>
+
+</div>
+
+
+
+<!-- POPUP -->
+
+<div
+    id="popup"
+    class="popup"
+>
+
+    <div class="popup-box">
+
+        <h2 id="popupTitle"></h2>
+
+        <p id="popupMessage"></p>
+
+        <button id="popupButton">
+            Continue
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const guess =
+    document.getElementById("guess");
+
+const check =
+    document.getElementById("check");
+
+const popup =
+    document.getElementById("popup");
+
+const popupTitle =
+    document.getElementById("popupTitle");
+
+const popupMessage =
+    document.getElementById("popupMessage");
+
+const popupButton =
+    document.getElementById("popupButton");
+
+const levelScreen =
+    document.getElementById("levelScreen");
+
+const easyButton =
+    document.getElementById("easyButton");
+
+const mediumButton =
+    document.getElementById("mediumButton");
+
+const hardButton =
+    document.getElementById("hardButton");
+
+const levelText =
+    document.getElementById("levelText");
+
+const xpText =
+    document.getElementById("xpText");
+
+const xpFill =
+    document.getElementById("xpFill");
+
+
+
+/* =========================
+   COUNTRIES
+========================= */
+
+const countries = [
+
+{
+    name: "brazil",
+
+    easy: [
+        "This country is in South America",
+        "People mainly speak Portuguese",
+        "The Amazon rainforest covers a huge part of it"
+    ],
+
+    medium: [
+        "It borders almost every country in South America",
+        "Its largest city is Sao Paulo",
+        "Its capital is Brasilia"
+    ],
+
+    hard: [
+        "Its currency is the real",
+        "It borders 10 countries",
+        "Pico da Neblina is its highest point"
+    ]
+},
+
+{
+    name: "japan",
+
+    easy: [
+        "This country is in Asia",
+        "It is made up of thousands of islands",
+        "Mount Fuji is here"
+    ],
+
+    medium: [
+        "Its capital is Tokyo",
+        "It lies in the Pacific Ring of Fire",
+        "Honshu is its largest island"
+    ],
+
+    hard: [
+        "Its currency is the yen",
+        "Hokkaido is one of its main islands",
+        "It lies east of the Korean Peninsula"
+    ]
+},
+
+{
+    name: "canada",
+
+    easy: [
+        "This country is in North America",
+        "It is north of the United States",
+        "Its capital is Ottawa"
+    ],
+
+    medium: [
+        "It has ten provinces",
+        "Toronto is its largest city",
+        "It has an extremely long coastline"
+    ],
+
+    hard: [
+        "Nunavut is its largest territory",
+        "It borders three oceans",
+        "Mount Logan is its highest mountain"
+    ]
+},
+
+{
+    name: "mexico",
+
+    easy: [
+        "This country borders the United States",
+        "It is in North America",
+        "Its capital is Mexico City"
+    ],
+
+    medium: [
+        "The Yucatan Peninsula is here",
+        "It borders Guatemala",
+        "Chichen Itza is here"
+    ],
+
+    hard: [
+        "Pico de Orizaba is its highest mountain",
+        "It has 31 states",
+        "It borders Belize"
+    ]
+},
+
+{
+    name: "france",
+
+    easy: [
+        "This country is in Europe",
+        "The Eiffel Tower is here",
+        "Its capital is Paris"
+    ],
+
+    medium: [
+        "It borders Spain, Germany and Italy",
+        "The Louvre is here",
+        "The Alps reach part of this country"
+    ],
+
+    hard: [
+        "Corsica belongs to this country",
+        "The Loire is a major river here",
+        "Mont Blanc lies on one of its borders"
+    ]
+},
+
+{
+    name: "italy",
+
+    easy: [
+        "This country looks like a boot",
+        "It is in Europe",
+        "Its capital is Rome"
+    ],
+
+    medium: [
+        "Sicily belongs to this country",
+        "Venice is here",
+        "The Alps are in its north"
+    ],
+
+    hard: [
+        "San Marino is surrounded by it",
+        "The Po is its longest river",
+        "Mount Etna is here"
+    ]
+},
+
+{
+    name: "germany",
+
+    easy: [
+        "This country is in Europe",
+        "Its capital is Berlin",
+        "It borders France and Poland"
+    ],
+
+    medium: [
+        "It borders nine countries",
+        "Munich is one of its major cities",
+        "The Rhine flows through it"
+    ],
+
+    hard: [
+        "Its highest mountain is the Zugspitze",
+        "The Danube begins here",
+        "It has coastline on the Baltic Sea"
+    ]
+},
+
+{
+    name: "spain",
+
+    easy: [
+        "This country is in Europe",
+        "Its capital is Madrid",
+        "It borders Portugal"
+    ],
+
+    medium: [
+        "Barcelona is here",
+        "It borders France",
+        "The Canary Islands belong to it"
+    ],
+
+    hard: [
+        "The Pyrenees form part of its border",
+        "The Ebro is a major river",
+        "It occupies most of the Iberian Peninsula"
+    ]
+},
+
+{
+    name: "portugal",
+
+    easy: [
+        "This country borders Spain",
+        "Its capital is Lisbon",
+        "It is in Europe"
+    ],
+
+    medium: [
+        "Porto is one of its major cities",
+        "It faces the Atlantic Ocean",
+        "Madeira belongs to it"
+    ],
+
+    hard: [
+        "The Azores belong to it",
+        "Mount Pico is its highest point",
+        "It occupies the west of the Iberian Peninsula"
+    ]
+},
+
+{
+    name: "united kingdom",
+
+    easy: [
+        "Its capital is London",
+        "It is in Europe",
+        "It includes England, Scotland, Wales and Northern Ireland"
+    ],
+
+    medium: [
+        "The River Thames flows through its capital",
+        "It lies northwest of France",
+        "Edinburgh is in this country"
+    ],
+
+    hard: [
+        "Ben Nevis is its highest mountain",
+        "It has one land border with another sovereign country",
+        "Great Britain contains three of its four nations"
+    ]
+},
+
+{
+    name: "ireland",
+
+    easy: [
+        "This country is an island in Europe",
+        "Its capital is Dublin",
+        "It is famous for green countryside"
+    ],
+
+    medium: [
+        "It shares its island with Northern Ireland",
+        "The River Shannon flows here",
+        "It lies west of Great Britain"
+    ],
+
+    hard: [
+        "Carrauntoohil is its highest mountain",
+        "It has 26 counties",
+        "Galway lies on its west coast"
+    ]
+},
+
+{
+    name: "iceland",
+
+    easy: [
+        "This island country has many volcanoes",
+        "It is in the North Atlantic",
+        "Its capital is Reykjavik"
+    ],
+
+    medium: [
+        "It sits on the Mid-Atlantic Ridge",
+        "It has many glaciers and geysers",
+        "It lies northwest of the United Kingdom"
+    ],
+
+    hard: [
+        "Vatnajokull is a major glacier here",
+        "Two tectonic plates meet here",
+        "It is one of Europe's least densely populated countries"
+    ]
+},
+
+{
+    name: "norway",
+
+    easy: [
+        "This country is famous for fjords",
+        "It is in Northern Europe",
+        "Its capital is Oslo"
+    ],
+
+    medium: [
+        "It borders Sweden",
+        "Part of it lies above the Arctic Circle",
+        "It faces the North Atlantic"
+    ],
+
+    hard: [
+        "Svalbard is under its sovereignty",
+        "Galdhopiggen is its highest mountain",
+        "Its longest land border is with Sweden"
+    ]
+},
+
+{
+    name: "sweden",
+
+    easy: [
+        "This country is in Northern Europe",
+        "It borders Norway",
+        "Its capital is Stockholm"
+    ],
+
+    medium: [
+        "It borders Finland",
+        "It faces the Baltic Sea",
+        "It is the largest Nordic country by area"
+    ],
+
+    hard: [
+        "Vanern is its largest lake",
+        "Gotland belongs to it",
+        "Kebnekaise is its highest mountain"
+    ]
+},
+
+{
+    name: "finland",
+
+    easy: [
+        "This country is in Northern Europe",
+        "It borders Russia",
+        "Its capital is Helsinki"
+    ],
+
+    medium: [
+        "It is famous for thousands of lakes",
+        "It borders Sweden and Norway",
+        "Part of it lies above the Arctic Circle"
+    ],
+
+    hard: [
+        "Lake Saimaa is here",
+        "Its highest point is Halti",
+        "It faces the Gulf of Bothnia"
+    ]
+},
+
+{
+    name: "switzerland",
+
+    easy: [
+        "The Alps cover much of this country",
+        "It is in Europe",
+        "Its capital is Bern"
+    ],
+
+    medium: [
+        "It has no coastline",
+        "It borders France, Germany, Italy and Austria",
+        "Zurich is one of its largest cities"
+    ],
+
+    hard: [
+        "The Matterhorn lies on one of its borders",
+        "The Rhine begins here",
+        "It has four national languages"
+    ]
+},
+
+{
+    name: "greece",
+
+    easy: [
+        "This country has thousands of islands",
+        "It is in Europe",
+        "Its capital is Athens"
+    ],
+
+    medium: [
+        "It borders Turkey",
+        "Crete belongs to it",
+        "The Aegean Sea lies to its east"
+    ],
+
+    hard: [
+        "Mount Olympus is here",
+        "The Peloponnese is part of it",
+        "It borders Albania and Bulgaria"
+    ]
+},
+
+{
+    name: "egypt",
+
+    easy: [
+        "The pyramids are here",
+        "The Nile flows through it",
+        "This country is in Africa"
+    ],
+
+    medium: [
+        "Its capital is Cairo",
+        "It borders Libya and Sudan",
+        "The Sinai Peninsula belongs to it"
+    ],
+
+    hard: [
+        "The Suez Canal crosses it",
+        "It connects Africa and Asia",
+        "It touches the Mediterranean and Red Seas"
+    ]
+},
+
+{
+    name: "south africa",
+
+    easy: [
+        "This country is at the southern end of Africa",
+        "Cape Town is here",
+        "It has coastlines on two oceans"
+    ],
+
+    medium: [
+        "Lesotho is surrounded by it",
+        "Johannesburg is one of its largest cities",
+        "It borders Namibia and Botswana"
+    ],
+
+    hard: [
+        "The Drakensberg mountains run through part of it",
+        "It has three capital cities",
+        "The Orange River crosses it"
+    ]
+},
+
+{
+    name: "kenya",
+
+    easy: [
+        "This country is in East Africa",
+        "It is famous for safari wildlife",
+        "Its capital is Nairobi"
+    ],
+
+    medium: [
+        "The equator crosses it",
+        "It borders Tanzania",
+        "It has coastline on the Indian Ocean"
+    ],
+
+    hard: [
+        "Mount Kenya is its highest mountain",
+        "Lake Turkana is here",
+        "It borders five countries"
+    ]
+},
+
+{
+    name: "india",
+
+    easy: [
+        "The Taj Mahal is here",
+        "This country is in Asia",
+        "More than a billion people live here"
+    ],
+
+    medium: [
+        "Its capital is New Delhi",
+        "The Himalayas lie to its north",
+        "It borders Pakistan and China"
+    ],
+
+    hard: [
+        "The Ganges flows through its north",
+        "The Deccan Plateau covers much of its south",
+        "It touches the Arabian Sea and Bay of Bengal"
+    ]
+},
+
+{
+    name: "china",
+
+    easy: [
+        "The Great Wall is here",
+        "This country is in Asia",
+        "Its capital is Beijing"
+    ],
+
+    medium: [
+        "Shanghai is one of its largest cities",
+        "It borders 14 countries",
+        "The Yangtze River flows through it"
+    ],
+
+    hard: [
+        "The Tibetan Plateau covers much of its west",
+        "The Yellow River flows through it",
+        "It shares one of the world's longest land borders"
+    ]
+},
+
+{
+    name: "south korea",
+
+    easy: [
+        "This country is in East Asia",
+        "Its capital is Seoul",
+        "It borders North Korea"
+    ],
+
+    medium: [
+        "Busan is a major city",
+        "It occupies the southern half of a peninsula",
+        "It lies west of Japan"
+    ],
+
+    hard: [
+        "Jeju is its largest island",
+        "Hallasan is its highest mountain",
+        "The Han River runs through its capital"
+    ]
+},
+
+{
+    name: "thailand",
+
+    easy: [
+        "This country is in Southeast Asia",
+        "Its capital is Bangkok",
+        "It is famous for tropical beaches"
+    ],
+
+    medium: [
+        "It borders Myanmar, Laos and Cambodia",
+        "Phuket belongs to this country",
+        "It has coastline on two seas"
+    ],
+
+    hard: [
+        "Doi Inthanon is its highest mountain",
+        "The Chao Phraya River flows through its capital",
+        "Its south lies on the Malay Peninsula"
+    ]
+},
+
+{
+    name: "indonesia",
+
+    easy: [
+        "This country is made of thousands of islands",
+        "Bali belongs to it",
+        "It is in Southeast Asia"
+    ],
+
+    medium: [
+        "Java and Sumatra are part of it",
+        "It has many volcanoes",
+        "It lies between the Indian and Pacific Oceans"
+    ],
+
+    hard: [
+        "It shares Borneo with two other countries",
+        "Sulawesi belongs to it",
+        "The equator crosses the country"
+    ]
+},
+
+{
+    name: "australia",
+
+    easy: [
+        "This country is also a continent",
+        "Kangaroos live here",
+        "Sydney is one of its largest cities"
+    ],
+
+    medium: [
+        "Its capital is Canberra",
+        "The Great Barrier Reef is nearby",
+        "It lies between the Indian and Pacific Oceans"
+    ],
+
+    hard: [
+        "Tasmania is one of its states",
+        "Mount Kosciuszko is its highest mainland mountain",
+        "The Murray is one of its longest rivers"
+    ]
+},
+
+{
+    name: "new zealand",
+
+    easy: [
+        "This country is southeast of Australia",
+        "It has two main large islands",
+        "Its capital is Wellington"
+    ],
+
+    medium: [
+        "Auckland is its largest city",
+        "The Southern Alps cross part of it",
+        "It lies in the South Pacific"
+    ],
+
+    hard: [
+        "Cook Strait separates its main islands",
+        "Aoraki is its highest mountain",
+        "It sits near two tectonic plates"
+    ]
+},
+
+{
+    name: "argentina",
+
+    easy: [
+        "This country is in South America",
+        "It borders Chile",
+        "Its capital is Buenos Aires"
+    ],
+
+    medium: [
+        "Patagonia covers much of its south",
+        "The Andes form its western edge",
+        "It is the second-largest country in South America"
+    ],
+
+    hard: [
+        "Aconcagua is here",
+        "The Parana River flows near its northeast",
+        "Tierra del Fuego is partly controlled by it"
+    ]
+},
+
+{
+    name: "chile",
+
+    easy: [
+        "This country is very long and narrow",
+        "It is in South America",
+        "Its capital is Santiago"
+    ],
+
+    medium: [
+        "The Andes run along its east",
+        "The Pacific Ocean lies to its west",
+        "The Atacama Desert is here"
+    ],
+
+    hard: [
+        "Easter Island belongs to it",
+        "It borders Peru",
+        "Cape Horn lies near its far south"
+    ]
+},
+
+{
+    name: "peru",
+
+    easy: [
+        "Machu Picchu is here",
+        "This country is in South America",
+        "Its capital is Lima"
+    ],
+
+    medium: [
+        "The Andes run through it",
+        "It borders Brazil",
+        "Part of the Amazon rainforest is here"
+    ],
+
+    hard: [
+        "Lake Titicaca lies on one border",
+        "Huascaran is its highest mountain",
+        "The Ucayali is one of its major rivers"
+    ]
+},
+
+{
+    name: "cuba",
+
+    easy: [
+        "This country is an island in the Caribbean",
+        "It is south of Florida",
+        "Its capital is Havana"
+    ],
+
+    medium: [
+        "It is the largest island in the Caribbean",
+        "It lies west of Haiti",
+        "The Gulf of Mexico lies northwest of it"
+    ],
+
+    hard: [
+        "Pico Turquino is its highest point",
+        "The Sierra Maestra mountains are here",
+        "The Straits of Florida separate it from the United States"
+    ]
+},
+
+{
+    name: "jamaica",
+
+    easy: [
+        "This country is an island in the Caribbean",
+        "Its capital is Kingston",
+        "It is famous for reggae"
+    ],
+
+    medium: [
+        "It lies south of Cuba",
+        "It is west of Haiti",
+        "The Blue Mountains are here"
+    ],
+
+    hard: [
+        "Blue Mountain Peak is its highest point",
+        "It is part of the Greater Antilles",
+        "It has no land borders"
+    ]
+},
+
+{
+    name: "panama",
+
+    easy: [
+        "A famous canal crosses this country",
+        "It is in Central America",
+        "It connects North and South America"
+    ],
+
+    medium: [
+        "It borders Costa Rica and Colombia",
+        "Its capital shares its name",
+        "It has Pacific and Caribbean coastlines"
+    ],
+
+    hard: [
+        "The Darien Gap is near its eastern border",
+        "Volcan Baru is its highest point",
+        "Its canal connects two oceans"
+    ]
+},
+
+{
+    name: "united states",
+
+    easy: [
+        "This country has 50 states",
+        "It is in North America",
+        "Its capital is Washington, D.C."
+    ],
+
+    medium: [
+        "Alaska and Hawaii are part of it",
+        "It borders Canada and Mexico",
+        "The Mississippi is one of its major rivers"
+    ],
+
+    hard: [
+        "Denali is its highest point",
+        "The Rocky Mountains cross much of its west",
+        "Its longest land border is with Canada"
+    ]
+}
+
+];
+
+
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+let difficulty = "easy";
+
+let answer;
+
+let score = 0;
+
+let round = 1;
+
+let wrongGuesses = 0;
+
+let streak = 0;
+
+let bestStreak = 0;
+
+let gameOver = false;
+
+let usedCountries = [];
+
+const maxRounds = 10;
+
+
+
+/* =========================
+   XP
+========================= */
+
+let playerLevel =
+    Number(
+        localStorage.getItem(
+            "countryPlayerLevel"
+        )
+    ) || 1;
+
+
+let playerXP =
+    Number(
+        localStorage.getItem(
+            "countryPlayerXP"
+        )
+    ) || 0;
+
+
+
+function xpNeeded() {
+
+    return 500 +
+        ((playerLevel - 1) * 150);
+
+}
+
+
+
+function savePlayer() {
+
+    localStorage.setItem(
+        "countryPlayerLevel",
+        playerLevel
+    );
+
+
+    localStorage.setItem(
+        "countryPlayerXP",
+        playerXP
+    );
+
+}
+
+
+
+function updateRank() {
+
+    let rank;
+
+
+    if (playerLevel >= 25) {
+
+        rank =
+            "👑 Geography Legend";
+
+    }
+
+    else if (
+        playerLevel >= 15
+    ) {
+
+        rank =
+            "🏆 World Master";
+
+    }
+
+    else if (
+        playerLevel >= 10
+    ) {
+
+        rank =
+            "🌎 Geographer";
+
+    }
+
+    else if (
+        playerLevel >= 6
+    ) {
+
+        rank =
+            "🗺️ Navigator";
+
+    }
+
+    else if (
+        playerLevel >= 3
+    ) {
+
+        rank =
+            "🧭 Explorer";
+
+    }
+
+    else {
+
+        rank =
+            "🌱 Rookie";
+
+    }
+
+
+    document.getElementById(
+        "rankText"
+    ).textContent =
+        rank;
+
+}
+
+
+
+function updateXPDisplay() {
+
+    const needed =
+        xpNeeded();
+
+
+    levelText.textContent =
+        "⭐ Player Level " +
+        playerLevel;
+
+
+    xpText.textContent =
+        playerXP +
+        " / " +
+        needed +
+        " XP";
+
+
+    let percent =
+        (playerXP / needed) * 100;
+
+
+    if (percent > 100) {
+
+        percent = 100;
+
+    }
+
+
+    xpFill.style.width =
+        percent + "%";
+
+
+    updateRank();
+
+}
+
+
+
+function addXP(amount) {
+
+    playerXP += amount;
+
+
+    while (
+        playerXP >= xpNeeded()
+    ) {
+
+        playerXP -=
+            xpNeeded();
+
+        playerLevel++;
+
+    }
+
+
+    savePlayer();
+
+    updateXPDisplay();
+
+}
+
+
+
+/* =========================
+   LEVEL BUTTONS
+========================= */
+
+easyButton.addEventListener(
+    "click",
+    function() {
+
+        chooseDifficulty("easy");
+
+    }
+);
+
+
+mediumButton.addEventListener(
+    "click",
+    function() {
+
+        chooseDifficulty("medium");
+
+    }
+);
+
+
+hardButton.addEventListener(
+    "click",
+    function() {
+
+        chooseDifficulty("hard");
+
+    }
+);
+
+
+
+function chooseDifficulty(level) {
+
+    difficulty = level;
+
+    levelScreen.style.display =
+        "none";
+
+    startGame();
+
+}
+
+
+
+/* =========================
+   HIGH SCORE
+========================= */
+
+function getHighScore() {
+
+    return Number(
+        localStorage.getItem(
+            "countryGuesserHighScore_" +
+            difficulty
+        )
+    ) || 0;
+
+}
+
+
+
+function saveHighScore(newScore) {
+
+    localStorage.setItem(
+        "countryGuesserHighScore_" +
+        difficulty,
+        newScore
+    );
+
+}
+
+
+
+/* =========================
+   COUNTRIES
+========================= */
+
+function pickCountry() {
+
+    let availableCountries =
+        countries.filter(
+            function(country) {
+
+                return !usedCountries
+                    .includes(
+                        country.name
+                    );
+
+            }
+        );
+
+
+    if (
+        availableCountries.length === 0
+    ) {
+
+        usedCountries = [];
+
+        availableCountries =
+            countries;
+
+    }
+
+
+    const randomNumber =
+        Math.floor(
+            Math.random() *
+            availableCountries.length
+        );
+
+
+    answer =
+        availableCountries[
+            randomNumber
+        ];
+
+
+    usedCountries.push(
+        answer.name
+    );
+
+}
+
+
+
+function showCountry() {
+
+    const clues =
+        answer[difficulty];
+
+
+    document.getElementById(
+        "clue1"
+    ).textContent =
+        "🧩 Clue 1: " +
+        clues[0];
+
+
+    document.getElementById(
+        "clue2"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "clue3"
+    ).textContent =
+        "";
+
+}
+
+
+
+/* =========================
+   STATS
+========================= */
+
+function updateStats() {
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        "⭐ Score: " +
+        score;
+
+
+    document.getElementById(
+        "round"
+    ).textContent =
+        "🌎 Round: " +
+        round +
+        " / " +
+        maxRounds;
+
+
+    document.getElementById(
+        "streak"
+    ).textContent =
+        "🔥 Streak: " +
+        streak;
+
+
+    let difficultyName =
+        difficulty
+            .charAt(0)
+            .toUpperCase() +
+        difficulty.slice(1);
+
+
+    document.getElementById(
+        "difficultyDisplay"
+    ).textContent =
+        "Difficulty: " +
+        difficultyName;
+
+}
+
+
+
+/* =========================
+   POPUPS
+========================= */
+
+function showPopup(
+    title,
+    message,
+    buttonText
+) {
+
+    popupTitle.textContent =
+        title;
+
+
+    popupMessage.textContent =
+        message;
+
+
+    popupButton.textContent =
+        buttonText;
+
+
+    popup.classList.add(
+        "show"
+    );
+
+}
+
+
+
+function closePopup() {
+
+    popup.classList.remove(
+        "show"
+    );
+
+}
+
+
+
+/* =========================
+   GAME START
+========================= */
+
+function startGame() {
+
+    score = 0;
+
+    round = 1;
+
+    streak = 0;
+
+    bestStreak = 0;
+
+    wrongGuesses = 0;
+
+    gameOver = false;
+
+    usedCountries = [];
+
+
+    guess.disabled =
+        false;
+
+
+    check.disabled =
+        false;
+
+
+    guess.value =
+        "";
+
+
+    closePopup();
+
+
+    pickCountry();
+
+    showCountry();
+
+    updateStats();
+
+    updateXPDisplay();
+
+
+    guess.focus();
+
+}
+
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function finishGame() {
+
+    gameOver = true;
+
+
+    guess.disabled =
+        true;
+
+
+    check.disabled =
+        true;
+
+
+    let highScore =
+        getHighScore();
+
+
+    let xpEarned =
+        Math.floor(
+            score / 10
+        );
+
+
+    if (
+        difficulty === "medium"
+    ) {
+
+        xpEarned =
+            Math.floor(
+                xpEarned * 1.25
+            );
+
+    }
+
+
+    if (
+        difficulty === "hard"
+    ) {
+
+        xpEarned =
+            Math.floor(
+                xpEarned * 1.5
+            );
+
+    }
+
+
+    const oldLevel =
+        playerLevel;
+
+
+    addXP(
+        xpEarned
+    );
+
+
+    let message =
+        "Score: " +
+        score +
+        "\n🔥 Best Streak: " +
+        bestStreak +
+        "\n✨ +" +
+        xpEarned +
+        " XP";
+
+
+    if (
+        playerLevel >
+        oldLevel
+    ) {
+
+        message +=
+            "\n\n🎉 LEVEL UP!" +
+            "\nYou are now Level " +
+            playerLevel +
+            "!";
+
+    }
+
+
+    if (
+        score > highScore
+    ) {
+
+        saveHighScore(
+            score
+        );
+
+
+        showPopup(
+            "🏆 NEW HIGH SCORE! 🏆",
+            message +
+            "\n⭐ High Score: " +
+            score,
+            "Play Again 🔄"
+        );
+
+    }
+
+    else {
+
+        showPopup(
+            "🏁 GAME OVER!",
+            message +
+            "\n🏆 High Score: " +
+            highScore,
+            "Play Again 🔄"
+        );
+
+    }
+
+}
+
+
+
+/* =========================
+   POPUP BUTTON
+========================= */
+
+popupButton.addEventListener(
+    "click",
+    function() {
+
+        if (gameOver) {
+
+            closePopup();
+
+
+            levelScreen.style.display =
+                "flex";
+
+
+            return;
+
+        }
+
+
+        closePopup();
+
+
+        guess.focus();
+
+    }
+);
+
+
+
+/* =========================
+   CHECK ANSWER
+========================= */
+
+check.addEventListener(
+    "click",
+    function() {
+
+        const playerGuess =
+            guess.value
+                .toLowerCase()
+                .trim();
+
+
+        if (
+            playerGuess === ""
+        ) {
+
+            showPopup(
+                "🤔 Type a country!",
+                "Enter your guess first.",
+                "Okay"
+            );
+
+
+            return;
+
+        }
+
+
+
+        if (
+            playerGuess ===
+            answer.name
+        ) {
+
+            let pointsEarned =
+                100;
+
+
+            if (
+                wrongGuesses === 0
+            ) {
+
+                pointsEarned =
+                    300;
+
+            }
+
+            else if (
+                wrongGuesses === 1
+            ) {
+
+                pointsEarned =
+                    200;
+
+            }
+
+
+            streak++;
+
+
+            if (
+                streak >
+                bestStreak
+            ) {
+
+                bestStreak =
+                    streak;
+
+            }
+
+
+            if (
+                streak >= 3
+            ) {
+
+                pointsEarned +=
+                    50;
+
+            }
+
+
+            score +=
+                pointsEarned;
+
+
+            updateStats();
+
+
+
+            if (
+                round >=
+                maxRounds
+            ) {
+
+                finishGame();
+
+                return;
+
+            }
+
+
+
+            showPopup(
+                "🌎 Correct! 🎉",
+                "+" +
+                pointsEarned +
+                " points!" +
+                "\n🔥 Streak: " +
+                streak,
+                "Next Country ➡️"
+            );
+
+
+            round++;
+
+
+            wrongGuesses =
+                0;
+
+
+            guess.value =
+                "";
+
+
+            pickCountry();
+
+            showCountry();
+
+            updateStats();
+
+        }
+
+
+        else {
+
+            wrongGuesses++;
+
+
+            streak =
+                0;
+
+
+            const clues =
+                answer[
+                    difficulty
+                ];
+
+
+            if (
+                wrongGuesses === 1
+            ) {
+
+                document.getElementById(
+                    "clue2"
+                ).textContent =
+                    "🧩 Clue 2: " +
+                    clues[1];
+
+
+                showPopup(
+                    "❌ Not quite!",
+                    "Clue 2 unlocked!",
+                    "Try Again"
+                );
+
+            }
+
+
+            else if (
+                wrongGuesses === 2
+            ) {
+
+                document.getElementById(
+                    "clue3"
+                ).textContent =
+                    "🧩 Clue 3: " +
+                    clues[2];
+
+
+                showPopup(
+                    "❌ Still not it!",
+                    "Clue 3 unlocked!",
+                    "Try Again"
+                );
+
+            }
+
+
+            else {
+
+                showPopup(
+                    "🤔 Keep trying!",
+                    "You have all 3 clues now.",
+                    "Try Again"
+                );
+
+            }
+
+
+            updateStats();
+
+        }
+
+    }
+);
+
+
+
+/* ENTER KEY */
+
+guess.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Enter" &&
+            !gameOver &&
+            !popup.classList
+                .contains("show")
+        ) {
+
+            check.click();
+
+        }
+
+    }
+);
+
+
+
+/* =========================
+   PLAYTIME REWARDS
+========================= */
+
+let playtimeSeconds =
+    0;
+
+
+let claimedRewards =
+    [];
+
+
+const rewards = [
+
+    {
+        minutes: 2,
+        xp: 100,
+        button: "reward2"
+    },
+
+    {
+        minutes: 5,
+        xp: 200,
+        button: "reward5"
+    },
+
+    {
+        minutes: 10,
+        xp: 350,
+        button: "reward10"
+    },
+
+    {
+        minutes: 20,
+        xp: 600,
+        button: "reward20"
+    }
+
+];
+
+
+
+function formatPlaytime(seconds) {
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+
+    const remainingSeconds =
+        seconds % 60;
+
+
+    let secondsText =
+        remainingSeconds;
+
+
+    if (
+        remainingSeconds < 10
+    ) {
+
+        secondsText =
+            "0" +
+            remainingSeconds;
+
+    }
+
+
+    return (
+        minutes +
+        ":" +
+        secondsText
+    );
+
+}
+
+
+
+function updateRewardButton(
+    reward
+) {
+
+    const button =
+        document.getElementById(
+            reward.button
+        );
+
+
+    if (
+        claimedRewards.includes(
+            reward.minutes
+        )
+    ) {
+
+        button.className =
+            "reward claimed";
+
+
+        button.innerHTML =
+            "✅ CLAIMED" +
+            "<span>+" +
+            reward.xp +
+            " XP</span>";
+
+
+        return;
+
+    }
+
+
+    if (
+        playtimeSeconds >=
+        reward.minutes * 60
+    ) {
+
+        button.className =
+            "reward ready";
+
+
+        button.innerHTML =
+            "🎁 CLAIM!" +
+            "<span>+" +
+            reward.xp +
+            " XP</span>";
+
+    }
+
+    else {
+
+        button.className =
+            "reward";
+
+
+        button.innerHTML =
+            "🔒 " +
+            reward.minutes +
+            " MIN" +
+            "<span>+" +
+            reward.xp +
+            " XP</span>";
+
+    }
+
+}
+
+
+
+function updatePlaytimeRewards() {
+
+    document.getElementById(
+        "playtime"
+    ).textContent =
+        "⏱️ Playtime: " +
+        formatPlaytime(
+            playtimeSeconds
+        );
+
+
+    rewards.forEach(
+        function(reward) {
+
+            updateRewardButton(
+                reward
+            );
+
+        }
+    );
+
+}
+
+
+
+function claimReward(
+    reward
+) {
+
+    if (
+        claimedRewards.includes(
+            reward.minutes
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        playtimeSeconds <
+        reward.minutes * 60
+    ) {
+
+        return;
+
+    }
+
+
+    claimedRewards.push(
+        reward.minutes
+    );
+
+
+    const oldLevel =
+        playerLevel;
+
+
+    addXP(
+        reward.xp
+    );
+
+
+    let message =
+        "You earned +" +
+        reward.xp +
+        " XP!";
+
+
+    if (
+        playerLevel >
+        oldLevel
+    ) {
+
+        message +=
+            "\n\n🎉 LEVEL UP!" +
+            "\nYou are now Level " +
+            playerLevel +
+            "!";
+
+    }
+
+
+    showPopup(
+        "🎁 REWARD CLAIMED!",
+        message,
+        "Awesome! 😎"
+    );
+
+
+    updatePlaytimeRewards();
+
+}
+
+
+
+/* REWARD BUTTON EVENTS */
+
+rewards.forEach(
+    function(reward) {
+
+        document.getElementById(
+            reward.button
+        ).addEventListener(
+            "click",
+            function() {
+
+                claimReward(
+                    reward
+                );
+
+            }
+        );
+
+    }
+);
+
+
+
+/* TIMER */
+
+setInterval(
+    function() {
+
+        playtimeSeconds++;
+
+        updatePlaytimeRewards();
+
+    },
+    1000
+);
+
+
+
+/* INITIAL DISPLAY */
+
+updateXPDisplay();
+
+updatePlaytimeRewards();
+
+</script>
+
+</body>
+</html>
